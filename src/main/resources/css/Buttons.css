@@ -1,9 +1,9 @@
 .Button {
-  -fx-background-radius: 12px;
+  -fx-background-radius: 8px;
 
   -fx-border: 1px;
   -fx-border-color: Black;
-  -fx-border-radius: 12px;
+  -fx-border-radius: 8px;
 }
 
 .Button:hover {

@@ -19,18 +19,69 @@
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <TextArea fx:id="TextFieldArea" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
                </VBox.margin>
             </TextArea>
             <HBox alignment="CENTER_RIGHT" prefWidth="200.0">
                <children>
-                  <Button mnemonicParsing="false" styleClass="Button" text="Zapisz">
-                     <HBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </HBox.margin>
-                  </Button>
+                  <VBox HBox.hgrow="ALWAYS">
+                     <children>
+                        <HBox VBox.vgrow="NEVER">
+                           <children>
+                              <Label prefHeight="25.0" prefWidth="80.0" text="Plik xml:">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="XmlFilePathField" prefHeight="25.0" HBox.hgrow="ALWAYS">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                              <Button fx:id="XmlFilePathButton" mnemonicParsing="false" onAction="#onChooseXmlFileButtonClicked" styleClass="Button" text="...">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <HBox VBox.vgrow="NEVER">
+                           <children>
+                              <Label prefHeight="25.0" prefWidth="80.0" text="Folder zapisu:">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="SaveFolderField" HBox.hgrow="ALWAYS">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                              <Button fx:id="SaveFolderButton" mnemonicParsing="false" onAction="#onChooseSaveFolderButtonClicked" styleClass="Button" text="...">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" HBox.hgrow="NEVER">
+                     <children>
+                        <Button fx:id="LoadXmlFileButton" mnemonicParsing="false" onAction="#onLoadXmlFileButtonClicked" prefWidth="60.0" styleClass="Button" text="Wczytaj">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Button fx:id="SaveButton" mnemonicParsing="false" onAction="#onSaveButtonClicked" prefWidth="60.0" styleClass="Button" text="Zapisz">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
                </children>
             </HBox>
          </children>
@@ -47,12 +98,12 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Spinner prefHeight="25.0">
+            <Spinner fx:id="IdSpinner" prefHeight="25.0">
                <HBox.margin>
                   <Insets bottom="5.0" right="5.0" top="5.0" />
                </HBox.margin>
             </Spinner>
-            <Button mnemonicParsing="false" prefHeight="25.0" styleClass="Button" text="Wczytaj">
+            <Button fx:id="LoadButton" mnemonicParsing="false" onAction="#onLoadButtonClicked" prefHeight="25.0" styleClass="Button" text="Wczytaj">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
