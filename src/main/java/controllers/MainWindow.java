@@ -5,45 +5,69 @@ import java.util.List;
 
 import controllers.view.MarkerButtonView;
 import data.MarkerDto;
+import data.MedicalTextDto;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import lombok.extern.slf4j.Slf4j;
 import models.MainWindowModel;
 import org.apache.commons.lang3.NotImplementedException;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
+@Slf4j
 public class MainWindow implements ModelBindable<MainWindowModel> {
     private MainWindowModel service;
     public VBox MarkerButtonBox;
     public TextArea TextFieldArea;
-    public TextField XmlFilePathField;
-    public Button XmlFilePathButton;
+    public TextField XlsFilePathField;
+    public Button XlsFilePathButton;
     public TextField SaveFolderField;
     public Button SaveFolderButton;
     public Button SaveButton;
-    public Spinner IdSpinner;
+    public Spinner<Integer> IdSpinner;
     public Button LoadButton;
-    public Button LoadXmlFileButton;
+    public Button LoadXlsFileButton;
+
+    private MedicalTextDto currentText;
 
     @Override
     public void setService(MainWindowModel service) {
         this.service = service;
 
         connectObservables();
+        initValidation();
+        initValues();
+    }
+
+    private void initValues() {
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000, 0);
+        IdSpinner.setValueFactory(valueFactory);
     }
 
     private void connectObservables() {
         service.getMarkers().addListener(this::onMarkersChanged);
+    }
+
+    private void initValidation() {
+        IdSpinner.disableProperty().bind(Bindings.size(service.getMedicalTextDtos()).isEqualTo(0));
+        LoadButton.disableProperty().bind(Bindings.size(service.getMedicalTextDtos()).isEqualTo(0));
+        LoadButton.disableProperty().bind(IdSpinner.valueProperty().isNull());
+
+        LoadXlsFileButton.disableProperty().bind(Bindings.size(service.getMedicalTextDtos()).greaterThan(0));
+        LoadXlsFileButton.disableProperty().bind(XlsFilePathField.textProperty().isEmpty());
+        SaveButton.disableProperty().bind(TextFieldArea.textProperty().isNull()
+                                                       .or(TextFieldArea.textProperty().isEmpty()));
+        SaveButton.disableProperty().bind(SaveFolderField.textProperty().isNull()
+                                                         .or(SaveFolderField.textProperty().isEmpty()));
     }
 
     private void onMarkersChanged(Change<? extends MarkerDto> change) {
@@ -86,11 +110,11 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
     public void onChooseXmlFileButtonClicked() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Wybierz plik xml");
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Pliki xml (*.xml)", "*.xml");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Pliki xlsx (*.xlsx)", "*.xlsx");
         chooser.getExtensionFilters().add(extFilter);
-        File file = chooser.showOpenDialog(XmlFilePathButton.getScene().getWindow());
+        File file = chooser.showOpenDialog(XlsFilePathButton.getScene().getWindow());
 
-        XmlFilePathField.setText(file.getAbsolutePath());
+        XlsFilePathField.setText(file.getAbsolutePath());
     }
 
     public void onChooseSaveFolderButtonClicked() {
@@ -102,11 +126,19 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
     }
 
     public void onLoadButtonClicked() {
-
+        Integer chosenText = IdSpinner.getValue();
+        ObservableList<MedicalTextDto> medicalTextDtos = service.getMedicalTextDtos();
+        if (chosenText < medicalTextDtos.size()) {
+            currentText = medicalTextDtos.get(chosenText);
+            TextFieldArea.setText(currentText.getOperationDescription());
+        } else {
+            log.warn("Chosen text id is incorrect");
+        }
     }
 
     public void onLoadXmlFileButtonClicked() {
-
+        String xlsFilePath = XlsFilePathField.getText();
+        service.loadXlsFile(xlsFilePath);
     }
 
     public void onSaveButtonClicked() {

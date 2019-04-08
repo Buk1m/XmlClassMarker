@@ -1,19 +1,32 @@
 package models;
 
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import data.MarkerDto;
+import data.MedicalTextDto;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+@Slf4j
 @Getter
 public class MainWindowModel extends BaseModel {
 
     private static final String fxmlMainWindowFileName = "fxml/MainWindow.fxml";
 
     private ObservableList<MarkerDto> markers = FXCollections.observableArrayList();
+    private ObservableList<MedicalTextDto> medicalTextDtos = FXCollections.observableArrayList();
     private Stage stage;
 
     public MainWindowModel(Stage primaryStage) {
@@ -34,6 +47,29 @@ public class MainWindowModel extends BaseModel {
         markers.add(new MarkerDto("wymiar", "Wymiary", Color.valueOf("#ffadd7"), "CTRL-3"));
         markers.add(new MarkerDto("lokalizacja", "Lokalizacje", Color.valueOf("#ffebad"), "CTRL-4"));
         markers.add(new MarkerDto("patologia", "Patologie", Color.valueOf("#d6ffad"), "CTRL-5"));
+    }
+
+    public void loadXlsFile(String path) {
+        try {
+            FileInputStream ip = new FileInputStream(path);
+            Workbook wb = WorkbookFactory.create(ip);
+            Sheet sheet = wb.getSheet("Arkusz1");
+
+            List<MedicalTextDto> medicalTexts = new ArrayList<>();
+            Iterator<Row> rowIterator = sheet.rowIterator();
+            rowIterator.next(); // skip column names
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+                int textId = (int) row.getCell(0).getNumericCellValue();
+                String text = row.getCell(7).getStringCellValue();
+
+                medicalTexts.add(new MedicalTextDto(textId, text));
+            }
+
+            medicalTextDtos.addAll(medicalTexts);
+        } catch (Exception e) {
+            log.error("Loading xml file failed", e);
+        }
     }
 
     void configureWindow(Stage stage, Scene scene) {

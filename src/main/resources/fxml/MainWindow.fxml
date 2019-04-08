@@ -19,7 +19,7 @@
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea fx:id="TextFieldArea" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <TextArea fx:id="TextFieldArea" prefWidth="200.0" wrapText="true" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
                </VBox.margin>
@@ -30,17 +30,17 @@
                      <children>
                         <HBox VBox.vgrow="NEVER">
                            <children>
-                              <Label prefHeight="25.0" prefWidth="80.0" text="Plik xml:">
+                              <Label prefHeight="25.0" prefWidth="80.0" text="Plik xls:">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="XmlFilePathField" prefHeight="25.0" HBox.hgrow="ALWAYS">
+                              <TextField fx:id="XlsFilePathField" prefHeight="25.0" HBox.hgrow="ALWAYS">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </HBox.margin>
                               </TextField>
-                              <Button fx:id="XmlFilePathButton" mnemonicParsing="false" onAction="#onChooseXmlFileButtonClicked" styleClass="Button" text="...">
+                              <Button fx:id="XlsFilePathButton" mnemonicParsing="false" onAction="#onChooseXmlFileButtonClicked" styleClass="Button" text="...">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </HBox.margin>
@@ -70,7 +70,7 @@
                   </VBox>
                   <VBox alignment="CENTER" HBox.hgrow="NEVER">
                      <children>
-                        <Button fx:id="LoadXmlFileButton" mnemonicParsing="false" onAction="#onLoadXmlFileButtonClicked" prefWidth="60.0" styleClass="Button" text="Wczytaj">
+                        <Button fx:id="LoadXlsFileButton" mnemonicParsing="false" onAction="#onLoadXmlFileButtonClicked" prefWidth="60.0" styleClass="Button" text="Wczytaj">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
