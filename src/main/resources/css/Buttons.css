@@ -1,0 +1,17 @@
+.Button {
+  -fx-background-radius: 12px;
+
+  -fx-border: 1px;
+  -fx-border-color: Black;
+  -fx-border-radius: 12px;
+}
+
+.Button:hover {
+  -fx-scale-y: 1.1;
+  -fx-scale-x: 1.1;
+}
+
+.Button:pressed {
+  -fx-scale-y: 0.9;
+  -fx-scale-x: 0.9;
+}
