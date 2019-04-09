@@ -1,6 +1,8 @@
 package controllers;
 
 import java.io.File;
+import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 
 import controllers.view.MarkerButtonView;
@@ -11,15 +13,23 @@ import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Popup;
 import lombok.extern.slf4j.Slf4j;
 import models.MainWindowModel;
 import org.apache.commons.lang3.NotImplementedException;
+import org.fxmisc.richtext.Caret.CaretVisibility;
+import org.fxmisc.richtext.StyleClassedTextArea;
+import org.fxmisc.richtext.event.MouseOverTextEvent;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyledDocument;
+import org.reactfx.value.Val;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
@@ -27,7 +37,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 public class MainWindow implements ModelBindable<MainWindowModel> {
     private MainWindowModel service;
     public VBox MarkerButtonBox;
-    public TextArea TextFieldArea;
+    public StyleClassedTextArea htmlEditor;
     public TextField XlsFilePathField;
     public Button XlsFilePathButton;
     public TextField SaveFolderField;
@@ -46,6 +56,38 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
         connectObservables();
         initValidation();
         initValues();
+        setupEditor();
+    }
+
+    private void setupEditor() {
+        htmlEditor.setWrapText(true);
+        htmlEditor.setEditable(false);
+        htmlEditor.setShowCaret(CaretVisibility.ON);
+
+        setupTooltip();
+    }
+
+    private void setupTooltip() {
+        Popup popup = new Popup();
+        Label popupMsg = new Label();
+        popupMsg.setStyle(
+                "-fx-background-color: grey;" +
+                "-fx-text-fill: white;" +
+                "-fx-padding: 5;");
+        popup.getContent().add(popupMsg);
+
+        htmlEditor.setMouseOverTextDelay(Duration.ofMillis(500));
+        htmlEditor.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
+            int chIdx = e.getCharacterIndex();
+            Point2D pos = e.getScreenPosition();
+
+            Collection<String> styleOfChar = htmlEditor.getStyleOfChar(chIdx);
+            if (!styleOfChar.isEmpty()) {
+                popupMsg.setText(styleOfChar.iterator().next());
+                popup.show(htmlEditor, pos.getX(), pos.getY() + 10);
+            }
+        });
+        htmlEditor.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> popup.hide());
     }
 
     private void initValues() {
@@ -59,13 +101,12 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
 
     private void initValidation() {
         IdSpinner.disableProperty().bind(Bindings.size(service.getMedicalTextDtos()).isEqualTo(0));
-        LoadButton.disableProperty().bind(Bindings.size(service.getMedicalTextDtos()).isEqualTo(0));
-        LoadButton.disableProperty().bind(IdSpinner.valueProperty().isNull());
+        LoadButton.disableProperty().bind(Bindings.size(service.getMedicalTextDtos()).isEqualTo(0)
+                                                  .or(IdSpinner.valueProperty().isNull()));
 
         LoadXlsFileButton.disableProperty().bind(Bindings.size(service.getMedicalTextDtos()).greaterThan(0));
         LoadXlsFileButton.disableProperty().bind(XlsFilePathField.textProperty().isEmpty());
-        SaveButton.disableProperty().bind(TextFieldArea.textProperty().isNull()
-                                                       .or(TextFieldArea.textProperty().isEmpty()));
+        SaveButton.disableProperty().bind(Val.map(htmlEditor.lengthProperty(), n -> n == 0));
         SaveButton.disableProperty().bind(SaveFolderField.textProperty().isNull()
                                                          .or(SaveFolderField.textProperty().isEmpty()));
     }
@@ -104,7 +145,13 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
     }
 
     private void onButtonClicked(MarkerButtonView markerView, ActionEvent event) {
+        IndexRange selection = htmlEditor.getSelection();
 
+        if (!markerView.getMarker().getClassLabel().equals(MainWindowModel.CLEAR_BUTTON_LABEL)) {
+            htmlEditor.setStyleClass(selection.getStart(), selection.getEnd(), markerView.getMarker().getClassLabel());
+        } else {
+            htmlEditor.clearStyle(selection.getStart(), selection.getEnd());
+        }
     }
 
     public void onChooseXmlFileButtonClicked() {
@@ -114,7 +161,11 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
         chooser.getExtensionFilters().add(extFilter);
         File file = chooser.showOpenDialog(XlsFilePathButton.getScene().getWindow());
 
-        XlsFilePathField.setText(file.getAbsolutePath());
+        if (file != null) {
+            XlsFilePathField.setText(file.getAbsolutePath());
+        } else {
+            log.info("Chosen file path is null");
+        }
     }
 
     public void onChooseSaveFolderButtonClicked() {
@@ -122,7 +173,11 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
         chooser.setTitle("Wybierz folder do zapisu");
         File file = chooser.showDialog(SaveFolderField.getScene().getWindow());
 
-        SaveFolderField.setText(file.getAbsolutePath());
+        if (file != null) {
+            SaveFolderField.setText(file.getAbsolutePath());
+        } else {
+            log.info("Chosen directory path is null");
+        }
     }
 
     public void onLoadButtonClicked() {
@@ -130,7 +185,7 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
         ObservableList<MedicalTextDto> medicalTextDtos = service.getMedicalTextDtos();
         if (chosenText < medicalTextDtos.size()) {
             currentText = medicalTextDtos.get(chosenText);
-            TextFieldArea.setText(currentText.getOperationDescription());
+            htmlEditor.replaceText(currentText.getOperationDescription());
         } else {
             log.warn("Chosen text id is incorrect");
         }
@@ -139,9 +194,13 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
     public void onLoadXmlFileButtonClicked() {
         String xlsFilePath = XlsFilePathField.getText();
         service.loadXlsFile(xlsFilePath);
+
+        htmlEditor.moveTo(0);
+        htmlEditor.requestFocus();
     }
 
     public void onSaveButtonClicked() {
-
+        StyledDocument<Collection<String>, String, Collection<String>> document = htmlEditor.getDocument();
+        StyleSpans<Collection<String>> styleSpans = document.getStyleSpans(0, htmlEditor.getLength());
     }
 }

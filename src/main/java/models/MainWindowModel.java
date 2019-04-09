@@ -22,7 +22,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 @Slf4j
 @Getter
 public class MainWindowModel extends BaseModel {
-
+    public static final String CLEAR_BUTTON_LABEL = "CLEAR";
     private static final String fxmlMainWindowFileName = "fxml/MainWindow.fxml";
 
     private ObservableList<MarkerDto> markers = FXCollections.observableArrayList();
@@ -37,7 +37,7 @@ public class MainWindowModel extends BaseModel {
     }
 
     private void initMarkerButtons() {
-        markers.add(new MarkerDto("CLEAR", "Wyczyść", Color.WHITE, "CTRL-Q"));
+        markers.add(new MarkerDto(CLEAR_BUTTON_LABEL, "Wyczyść", Color.WHITE, "CTRL-Q"));
         markers.add(new MarkerDto("czynnosc", "Czynności", Color.valueOf("#a0bd9b"), "CTRL-W"));
         markers.add(new MarkerDto("p_ust", "Płyny", Color.valueOf("#accfff"), "CTRL-E"));
         markers.add(new MarkerDto("narzedzie", "Narzędzia", Color.valueOf("#ed9a79"), "CTRL-R"));

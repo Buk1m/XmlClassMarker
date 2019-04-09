@@ -3,8 +3,9 @@ package controllers.view;
 import data.MarkerDto;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
-import javafx.scene.paint.Color;
+import lombok.Getter;
 
+@Getter
 public class MarkerButtonView extends Button {
     private MarkerDto marker;
 
@@ -16,15 +17,14 @@ public class MarkerButtonView extends Button {
 
         setText(marker.getDescription());
         getStyleClass().add("Button");
-        setStyle("-fx-background-color: " + toHex(marker.getColor()));
+        setStyle("-fx-background-color: " + toHex());
         setTooltip(new Tooltip(marker.getShortcut()));
     }
 
-    public static String toHex(Color color)
-    {
+    public String toHex() {
         return String.format("#%02X%02X%02X",
-                             (int) (color.getRed() * 255),
-                             (int) (color.getGreen() * 255),
-                             (int) (color.getBlue() * 255));
+                             (int) (marker.getColor().getRed() * 255),
+                             (int) (marker.getColor().getGreen() * 255),
+                             (int) (marker.getColor().getBlue() * 255));
     }
 }

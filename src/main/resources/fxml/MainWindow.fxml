@@ -5,7 +5,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainWindow">
+<?import org.fxmisc.richtext.StyleClassedTextArea?>
+
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainWindow">
     <stylesheets>
         <URL value="@../css/Buttons.css" />
     </stylesheets>
@@ -19,18 +21,18 @@
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea fx:id="TextFieldArea" prefWidth="200.0" wrapText="true" VBox.vgrow="ALWAYS">
-               <VBox.margin>
-                  <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-               </VBox.margin>
-            </TextArea>
+            <StyleClassedTextArea fx:id="htmlEditor" prefHeight="200.0" prefWidth="506.0" VBox.vgrow="ALWAYS">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </StyleClassedTextArea>
             <HBox alignment="CENTER_RIGHT" prefWidth="200.0">
                <children>
                   <VBox HBox.hgrow="ALWAYS">
                      <children>
                         <HBox VBox.vgrow="NEVER">
                            <children>
-                              <Label prefHeight="25.0" prefWidth="80.0" text="Plik xls:">
+                              <Label prefHeight="25.0" prefWidth="100.0" text="Plik xls:">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </HBox.margin>
@@ -49,7 +51,7 @@
                         </HBox>
                         <HBox VBox.vgrow="NEVER">
                            <children>
-                              <Label prefHeight="25.0" prefWidth="80.0" text="Folder zapisu:">
+                              <Label prefHeight="25.0" prefWidth="100.0" text="Folder zapisu:">
                                  <HBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </HBox.margin>
@@ -70,12 +72,12 @@
                   </VBox>
                   <VBox alignment="CENTER" HBox.hgrow="NEVER">
                      <children>
-                        <Button fx:id="LoadXlsFileButton" mnemonicParsing="false" onAction="#onLoadXmlFileButtonClicked" prefWidth="60.0" styleClass="Button" text="Wczytaj">
+                        <Button fx:id="LoadXlsFileButton" mnemonicParsing="false" onAction="#onLoadXmlFileButtonClicked" prefWidth="80.0" styleClass="Button" text="Wczytaj">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
                         </Button>
-                        <Button fx:id="SaveButton" mnemonicParsing="false" onAction="#onSaveButtonClicked" prefWidth="60.0" styleClass="Button" text="Zapisz">
+                        <Button fx:id="SaveButton" mnemonicParsing="false" onAction="#onSaveButtonClicked" prefWidth="80.0" styleClass="Button" text="Zapisz">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>

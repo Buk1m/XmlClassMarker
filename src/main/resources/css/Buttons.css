@@ -19,3 +19,39 @@
 .Button:disabled, .Button:disabled > * {
   -fx-opacity: 0.4 ;
 }
+
+.czynnosc {
+  -rtfx-background-color: #a0bd9b;
+}
+
+.p_ust {
+  -rtfx-background-color: #accfff;
+}
+
+.narzedzie {
+  -rtfx-background-color: #ed9a79;
+}
+
+.sub_chem {
+  -rtfx-background-color: #deb96a;
+}
+
+.narzad {
+  -rtfx-background-color: #a0eaff;
+}
+
+.cz_ciala {
+  -rtfx-background-color: #d5adff;
+}
+
+.wymiar {
+  -rtfx-background-color: #ffadd7;
+}
+
+.lokalizacja {
+  -rtfx-background-color: #ffebad;
+}
+
+.patologia {
+  -rtfx-background-color: #d6ffad;
+}
