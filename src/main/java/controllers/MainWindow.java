@@ -94,6 +94,7 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
     private void initValues() {
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000, 0);
         IdSpinner.setValueFactory(valueFactory);
+        IdSpinner.setEditable(true);
     }
 
     private void connectObservables() {

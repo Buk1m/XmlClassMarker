@@ -7,13 +7,13 @@
 }
 
 .Button:hover {
-  -fx-scale-y: 1.1;
-  -fx-scale-x: 1.1;
+  -fx-border-color: Grey;
+  -fx-background-color: #deebff;
 }
 
 .Button:pressed {
-  -fx-scale-y: 0.9;
-  -fx-scale-x: 0.9;
+  -fx-border-color: #deebff;
+  -fx-background-color: #a2aabe;
 }
 
 .Button:disabled, .Button:disabled > * {
