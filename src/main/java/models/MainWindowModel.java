@@ -4,10 +4,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import data.MarkerDto;
 import data.MedicalTextDto;
@@ -22,6 +21,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 
@@ -29,8 +29,10 @@ import org.fxmisc.richtext.model.StyleSpans;
 @Getter
 public class MainWindowModel extends BaseModel {
     public static final String CLEAR_BUTTON_LABEL = "CLEAR";
+    private static final String CACHE_FILE = "markedWordsCache.txt";
     private static final String fxmlMainWindowFileName = "fxml/MainWindow.fxml";
 
+    private final CacheManager cacheManager;
     private ObservableList<MarkerDto> markers = FXCollections.observableArrayList();
     private ObservableList<MedicalTextDto> medicalTextDtos = FXCollections.observableArrayList();
     private Stage stage;
@@ -40,6 +42,7 @@ public class MainWindowModel extends BaseModel {
         createScene(primaryStage, fxmlMainWindowFileName);
 
         initMarkerButtons();
+        cacheManager = new CacheManager(CACHE_FILE);
     }
 
     private void initMarkerButtons() {
@@ -78,6 +81,19 @@ public class MainWindowModel extends BaseModel {
         }
     }
 
+    public void applyCache(StyleClassedTextArea htmlEditor) {
+        Map<String, String> classLabelsByWords = cacheManager.getClassLabelsByWords();
+        String text = htmlEditor.getText();
+
+        for (var pair : classLabelsByWords.entrySet()) {
+            Matcher matcher = Pattern.compile("[ ,.\\\\\\/'\\\"\\n]" + pair.getKey() + "[ ,.\\\\\\/'\\\"\\n]").matcher(text);
+            matcher.results().forEach(match -> htmlEditor.setStyleClass(match.start() + 1,
+                                                                        match.end() - 1,
+                                                                        pair.getValue()));
+        }
+
+    }
+
     public void saveMarkedFile(String directoryPath, StyleSpans<Collection<String>> styleSpans, MedicalTextDto medicalText) {
         String preparedText = prepareText(styleSpans, medicalText);
         String filePath = directoryPath + "\\markedFile_" + medicalText.getProtocolId() + ".txt";
@@ -113,12 +129,14 @@ public class MainWindowModel extends BaseModel {
 
             position += span.getLength();
         }
+        cacheManager.saveCache();
 
         builder.append("\n</opis>\n");
         return builder.toString();
     }
 
     private String markText(String classLabel, String text) {
+        cacheManager.addEntry(classLabel, text);
         return "<" + classLabel + ">" + text + "</" + classLabel + ">";
     }
 

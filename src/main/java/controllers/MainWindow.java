@@ -190,6 +190,8 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
         if (chosenText < medicalTextDtos.size()) {
             currentText = medicalTextDtos.get(chosenText);
             htmlEditor.replaceText(currentText.getOperationDescription());
+
+            service.applyCache(htmlEditor);
         } else {
             log.warn("Chosen text id is incorrect");
         }
