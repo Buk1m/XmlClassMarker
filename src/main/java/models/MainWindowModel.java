@@ -102,7 +102,7 @@ public class MainWindowModel extends BaseModel {
 
     public void saveMarkedFile(String directoryPath, StyleSpans<Collection<String>> styleSpans, MedicalTextDto medicalText) {
         String preparedText = prepareText(styleSpans, medicalText);
-        String filePath = directoryPath + "\\markedFile_" + medicalText.getProtocolId() + ".txt";
+        String filePath = directoryPath + "/markedFile_" + medicalText.getProtocolId() + ".txt";
 
         saveToFile(filePath, preparedText);
     }
