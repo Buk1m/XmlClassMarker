@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import data.MarkerDto;
 import data.MedicalTextDto;
@@ -85,7 +87,11 @@ public class MainWindowModel extends BaseModel {
         Map<String, String> classLabelsByWords = cacheManager.getClassLabelsByWords();
         String text = htmlEditor.getText();
 
-        for (var pair : classLabelsByWords.entrySet()) {
+        List<Entry<String, String>> cacheEntries = classLabelsByWords.entrySet()
+                                                                     .stream()
+                                                                     .sorted(Comparator.comparing(Entry::getKey))
+                                                                     .collect(Collectors.toList());
+        for (var pair : cacheEntries) {
             Matcher matcher = Pattern.compile("[ ,.\\\\\\/'\\\"\\n]" + pair.getKey() + "[ ,.\\\\\\/'\\\"\\n]").matcher(text);
             matcher.results().forEach(match -> htmlEditor.setStyleClass(match.start() + 1,
                                                                         match.end() - 1,
