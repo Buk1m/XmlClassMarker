@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class CacheManager {
     }
 
     private void loadCache() {
-        try (FileReader fileIn = new FileReader(cacheFilePath)) {
+        try (FileReader fileIn = new FileReader(cacheFilePath, StandardCharsets.UTF_8)) {
             Gson gson = new Gson();
             Type type = new TypeToken<Map<String, String>>(){}.getType();
             classLabelsByWords = gson.fromJson(fileIn, type);
@@ -41,7 +42,7 @@ public class CacheManager {
     }
 
     public void saveCache() {
-        try (FileWriter fileOut = new FileWriter(cacheFilePath)) {
+        try (FileWriter fileOut = new FileWriter(cacheFilePath, StandardCharsets.UTF_8)) {
             Gson gson = new GsonBuilder().setPrettyPrinting()
                                          .create();
             gson.toJson(classLabelsByWords, fileOut);
