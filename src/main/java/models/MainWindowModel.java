@@ -1,7 +1,11 @@
 package models;
 
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,6 +22,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.fxmisc.richtext.model.StyleSpan;
+import org.fxmisc.richtext.model.StyleSpans;
 
 @Slf4j
 @Getter
@@ -37,16 +43,16 @@ public class MainWindowModel extends BaseModel {
     }
 
     private void initMarkerButtons() {
-        markers.add(new MarkerDto(CLEAR_BUTTON_LABEL, "Wyczyść", Color.WHITE, "CTRL-Q"));
-        markers.add(new MarkerDto("czynnosc", "Czynności", Color.valueOf("#a0bd9b"), "CTRL-W"));
-        markers.add(new MarkerDto("p_ust", "Płyny", Color.valueOf("#accfff"), "CTRL-E"));
-        markers.add(new MarkerDto("narzedzie", "Narzędzia", Color.valueOf("#ed9a79"), "CTRL-R"));
-        markers.add(new MarkerDto("sub_chem", "Sub. chemiczne", Color.valueOf("#deb96a"), "CTRL-T"));
-        markers.add(new MarkerDto("narzad", "narządy", Color.valueOf("#a0eaff"), "CTRL-1"));
-        markers.add(new MarkerDto("cz_ciala", "cz. ciała", Color.valueOf("#d5adff"), "CTRL-2"));
-        markers.add(new MarkerDto("wymiar", "Wymiary", Color.valueOf("#ffadd7"), "CTRL-3"));
-        markers.add(new MarkerDto("lokalizacja", "Lokalizacje", Color.valueOf("#ffebad"), "CTRL-4"));
-        markers.add(new MarkerDto("patologia", "Patologie", Color.valueOf("#d6ffad"), "CTRL-5"));
+        markers.add(new MarkerDto(CLEAR_BUTTON_LABEL, "Wyczyść", Color.WHITE, "Ctrl+Q"));
+        markers.add(new MarkerDto("czynnosc", "Czynności", Color.valueOf("#a0bd9b"), "Ctrl+W"));
+        markers.add(new MarkerDto("p_ust", "Płyny", Color.valueOf("#accfff"), "Ctrl+E"));
+        markers.add(new MarkerDto("narzedzie", "Narzędzia", Color.valueOf("#ed9a79"), "Ctrl+R"));
+        markers.add(new MarkerDto("sub_chem", "Sub. chemiczne", Color.valueOf("#deb96a"), "Ctrl+T"));
+        markers.add(new MarkerDto("narzad", "Narządy", Color.valueOf("#a0eaff"), "Ctrl+1"));
+        markers.add(new MarkerDto("cz_ciala", "Cz. ciała", Color.valueOf("#d5adff"), "Ctrl+2"));
+        markers.add(new MarkerDto("wymiar", "Wymiary", Color.valueOf("#ffadd7"), "Ctrl+3"));
+        markers.add(new MarkerDto("lokalizacja", "Lokalizacje", Color.valueOf("#ffebad"), "Ctrl+4"));
+        markers.add(new MarkerDto("patologia", "Patologie", Color.valueOf("#d6ffad"), "Ctrl+5"));
     }
 
     public void loadXlsFile(String path) {
@@ -70,6 +76,50 @@ public class MainWindowModel extends BaseModel {
         } catch (Exception e) {
             log.error("Loading xml file failed", e);
         }
+    }
+
+    public void saveMarkedFile(String directoryPath, StyleSpans<Collection<String>> styleSpans, MedicalTextDto medicalText) {
+        String preparedText = prepareText(styleSpans, medicalText);
+        String filePath = directoryPath + "\\markedFile_" + medicalText.getProtocolId() + ".txt";
+
+        saveToFile(filePath, preparedText);
+    }
+
+    private void saveToFile(String filePath, String textToSave) {
+        try (PrintWriter writer = new PrintWriter(filePath, StandardCharsets.UTF_8)) {
+            writer.write(textToSave);
+        } catch (IOException e) {
+            log.error("File saving failed!", e);
+        }
+    }
+
+    private String prepareText(StyleSpans<Collection<String>> styleSpans, MedicalTextDto medicalText) {
+        int position = 0;
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("<opis id=\"");
+        builder.append(medicalText.getProtocolId());
+        builder.append("\">\n");
+
+        for (StyleSpan<Collection<String>> span : styleSpans) {
+            String extractedString = medicalText.getOperationDescription().substring(position, position + span.getLength());
+            if (span.getStyle().isEmpty()) {
+                builder.append(extractedString);
+            } else {
+                String classLabel = span.getStyle().iterator().next();
+                String markedText = markText(classLabel, extractedString);
+                builder.append(markedText);
+            }
+
+            position += span.getLength();
+        }
+
+        builder.append("\n</opis>\n");
+        return builder.toString();
+    }
+
+    private String markText(String classLabel, String text) {
+        return "<" + classLabel + ">" + text + "</" + classLabel + ">";
     }
 
     void configureWindow(Stage stage, Scene scene) {

@@ -15,6 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -24,11 +25,13 @@ import javafx.stage.Popup;
 import lombok.extern.slf4j.Slf4j;
 import models.MainWindowModel;
 import org.apache.commons.lang3.NotImplementedException;
-import org.fxmisc.richtext.Caret.CaretVisibility;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyledDocument;
+import org.fxmisc.wellbehaved.event.EventPattern;
+import org.fxmisc.wellbehaved.event.InputMap;
+import org.fxmisc.wellbehaved.event.Nodes;
 import org.reactfx.value.Val;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -61,8 +64,6 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
 
     private void setupEditor() {
         htmlEditor.setWrapText(true);
-        htmlEditor.setEditable(false);
-        htmlEditor.setShowCaret(CaretVisibility.ON);
 
         setupTooltip();
     }
@@ -142,6 +143,9 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
         MarkerButtonBox.getChildren().add(hBox);
 
         markerView.setOnAction(event -> onButtonClicked(markerView, event));
+        Nodes.addInputMap(htmlEditor,
+                          InputMap.consume(EventPattern.keyPressed(KeyCombination.valueOf(markerView.getMarker().getShortcut())),
+                          event -> onButtonClicked(markerView, null)));
     }
 
     private void onButtonClicked(MarkerButtonView markerView, ActionEvent event) {
@@ -195,12 +199,14 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
         String xlsFilePath = XlsFilePathField.getText();
         service.loadXlsFile(xlsFilePath);
 
-        htmlEditor.moveTo(0);
         htmlEditor.requestFocus();
+        htmlEditor.moveTo(0);
     }
 
     public void onSaveButtonClicked() {
         StyledDocument<Collection<String>, String, Collection<String>> document = htmlEditor.getDocument();
         StyleSpans<Collection<String>> styleSpans = document.getStyleSpans(0, htmlEditor.getLength());
+
+        service.saveMarkedFile(SaveFolderField.getText(), styleSpans, currentText);
     }
 }
