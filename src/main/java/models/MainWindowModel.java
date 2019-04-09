@@ -89,7 +89,7 @@ public class MainWindowModel extends BaseModel {
 
         List<Entry<String, String>> cacheEntries = classLabelsByWords.entrySet()
                                                                      .stream()
-                                                                     .sorted(Comparator.comparing(Entry::getKey))
+                                                                     .sorted(Comparator.comparingInt(entry -> entry.getKey().length()))
                                                                      .collect(Collectors.toList());
         for (var pair : cacheEntries) {
             Matcher matcher = Pattern.compile("[ ,.\\\\\\/'\\\"\\n]" + pair.getKey() + "[ ,.\\\\\\/'\\\"\\n]").matcher(text);
