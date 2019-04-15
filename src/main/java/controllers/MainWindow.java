@@ -77,7 +77,7 @@ public class MainWindow implements ModelBindable<MainWindowModel> {
                 "-fx-padding: 5;");
         popup.getContent().add(popupMsg);
 
-        htmlEditor.setMouseOverTextDelay(Duration.ofMillis(500));
+        htmlEditor.setMouseOverTextDelay(Duration.ofMillis(200));
         htmlEditor.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
             int chIdx = e.getCharacterIndex();
             Point2D pos = e.getScreenPosition();

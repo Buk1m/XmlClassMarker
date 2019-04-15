@@ -3,6 +3,7 @@ package controllers.view;
 import data.MarkerDto;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
+import javafx.util.Duration;
 import lombok.Getter;
 
 @Getter
@@ -18,7 +19,11 @@ public class MarkerButtonView extends Button {
         setText(marker.getDescription());
         getStyleClass().add("Button");
         setStyle("-fx-background-color: " + toHex());
-        setTooltip(new Tooltip(marker.getShortcut()));
+
+        Tooltip buttonTooltip = new Tooltip(marker.getShortcut());
+        buttonTooltip.setShowDelay(new Duration(200));
+        setTooltip(buttonTooltip);
+
     }
 
     public String toHex() {

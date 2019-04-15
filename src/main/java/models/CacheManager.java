@@ -38,7 +38,7 @@ public class CacheManager {
     }
 
     public void addEntry(String classLabel, String markedText) {
-        classLabelsByWords.putIfAbsent(markedText, classLabel);
+        classLabelsByWords.put(markedText, classLabel);
     }
 
     public void saveCache() {
