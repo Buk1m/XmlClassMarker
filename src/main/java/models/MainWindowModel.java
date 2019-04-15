@@ -139,8 +139,9 @@ public class MainWindowModel extends BaseModel {
         builder.append(medicalText.getProtocolId());
         builder.append("\">\n");
 
+        String description = medicalText.getOperationDescription().replaceAll("\\r", "");
         for (StyleSpan<Collection<String>> span : styleSpans) {
-            String extractedString = medicalText.getOperationDescription().substring(position, position + span.getLength());
+            String extractedString = description.substring(position, position + span.getLength());
             if (span.getStyle().isEmpty()) {
                 builder.append(extractedString);
             } else {
