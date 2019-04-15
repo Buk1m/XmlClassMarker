@@ -55,3 +55,7 @@
 .patologia {
   -rtfx-background-color: #d6ffad;
 }
+
+#htmlEditor{
+  -fx-font-size: 22;
+}

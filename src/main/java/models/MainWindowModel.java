@@ -87,7 +87,6 @@ public class MainWindowModel extends BaseModel {
         Map<String, String> classLabelsByWords = cacheManager.getClassLabelsByWords();
         String text = htmlEditor.getText();
         htmlEditor.clearStyle(0, text.length());
-
         List<Entry<String, String>> cacheEntries = classLabelsByWords.entrySet()
                                                                      .stream()
                                                                      .sorted(Comparator.comparingInt(entry -> entry.getKey().length()))
