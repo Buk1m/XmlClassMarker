@@ -86,15 +86,31 @@ public class MainWindowModel extends BaseModel {
     public void applyCache(StyleClassedTextArea htmlEditor) {
         Map<String, String> classLabelsByWords = cacheManager.getClassLabelsByWords();
         String text = htmlEditor.getText();
+        htmlEditor.clearStyle(0, text.length());
 
         List<Entry<String, String>> cacheEntries = classLabelsByWords.entrySet()
                                                                      .stream()
                                                                      .sorted(Comparator.comparingInt(entry -> entry.getKey().length()))
                                                                      .collect(Collectors.toList());
         for (var pair : cacheEntries) {
-            Matcher matcher = Pattern.compile("[ ,.\\\\\\/'\\\"\\n]" + pair.getKey() + "[ ,.\\\\\\/'\\\"\\n]").matcher(text);
+            String startRegex = "(?i)[( ,.\\\\\\/'\\\"\\n]";
+            String endRegex = "[) ,.\\\\\\/'\\\"\\n]";
+
+            Matcher matcher = Pattern.compile(startRegex + pair.getKey() + endRegex).matcher(text);
             matcher.results().forEach(match -> htmlEditor.setStyleClass(match.start() + 1,
                                                                         match.end() - 1,
+                                                                        pair.getValue()));
+
+            // match at the beginning
+            matcher = Pattern.compile("(?i)^" + pair.getKey() + endRegex).matcher(text);
+            matcher.results().forEach(match -> htmlEditor.setStyleClass(match.start(),
+                                                                        match.end() - 1,
+                                                                        pair.getValue()));
+
+            // match at the end
+            matcher = Pattern.compile(startRegex + pair.getKey() + "$").matcher(text);
+            matcher.results().forEach(match -> htmlEditor.setStyleClass(match.start() + 1,
+                                                                        match.end(),
                                                                         pair.getValue()));
         }
 
