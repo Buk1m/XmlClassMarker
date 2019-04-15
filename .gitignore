@@ -3,7 +3,6 @@
 *.iml
 
 shade/
-markedWordsCache.txt
 
 # CMake
 cmake-build-*/
